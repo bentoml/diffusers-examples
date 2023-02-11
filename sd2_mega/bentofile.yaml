@@ -1,0 +1,16 @@
+service: "service.py:svc"
+include:
+  - "service.py"
+  - "configuration.yaml"
+python:
+  packages:
+    - torch
+    - transformers
+    - accelerate
+    - diffusers
+    - triton
+docker:
+    distro: debian
+    cuda_version: "11.6.2"
+    env:
+      BENTOML_CONFIG: "src/configuration.yaml"
