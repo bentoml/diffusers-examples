@@ -1,4 +1,4 @@
-## run BentoML service
+## Run BentoML service
 
 You can run a BentoML service with:
 
@@ -8,7 +8,7 @@ bentoml serve service:svc --production
 
 Then you can test the service with `../txt2img_test.sh`. If [`xformers`](https://github.com/facebookresearch/xformers) is installed, BentoML will utilize it for inference acceleration automatically.
 
-## build a Bento
+## Build a Bento
 
 We can easily build a Bento of our service, which can be containerized to a docker image later or deployed to cloud service like AWS EC2.
 
