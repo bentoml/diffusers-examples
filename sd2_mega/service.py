@@ -7,7 +7,6 @@ from bentoml.io import Image, JSON, Multipart
 bento_model = bentoml.diffusers.get("sd2:latest")
 stable_diffusion_runner = bento_model.with_options(
     pipeline_class=DiffusionPipeline,
-    torch_dtype=torch.float16, # comment out this line if GPU is not available
     custom_pipeline="stable_diffusion_mega",
 ).to_runner()
 

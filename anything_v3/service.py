@@ -4,9 +4,7 @@ import bentoml
 from bentoml.io import Image, JSON, Multipart
 
 bento_model = bentoml.diffusers.get("anything-v3:latest")
-anything_v3_runner = bento_model.with_options(
-    torch_dtype=torch.float16,
-).to_runner()
+anything_v3_runner = bento_model.to_runner()
 
 svc = bentoml.Service("anything_v3", runners=[anything_v3_runner])
 
