@@ -1,6 +1,10 @@
 # `bentoml.diffusers` examples
 
-This repository hosts supplementary materials of {the blog post url place holder}.
+This repository hosts supplementary materials of the article [Creating Stable Diffusion 2.0 Service With BentoML And Diffusers](https://modelserving.com/blog/creating-stable-diffusion-20-service-with-bentoml-and-diffusers).
+
+![image](https://user-images.githubusercontent.com/861225/219499965-0e722c89-25de-4f7a-b01f-7e7c0eff89a3.png)
+Prompt: Kawaii low poly grey American shorthair cat character, 3D isometric render, ambient occlusion, unity engine, lively color
+Negative prompt: low-res, blurry, mutation, deformed
 
 Currently we have three examples:
 
