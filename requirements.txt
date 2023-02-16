@@ -1,4 +1,4 @@
-#bentoml
+bentoml>=1.0.15
 diffusers
 accelerate
 transformers
