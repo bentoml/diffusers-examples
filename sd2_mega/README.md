@@ -17,7 +17,7 @@ To build a bento, we run `bentoml build`. Then after build we can list bentos by
 ```
  Tag                                        Size        Creation Time        Path
  anything_v3:5tts2vvn2oaggasc               18.24 GiB   2023-02-16 16:29:37  ~/bentoml/bentos/anything_v3/5tts2vvn2oaggasc
- stable_diffusion_v2:mlb3s6vny6hsuasc       19.33 GiB   2023-02-16 14:59:54  ~/bentoml/bentos/stable_diffusion_v2_mega/mlb3s6vny6hsuasc
+ stable_diffusion_v2_mega:mlb3s6vny6hsuasc       19.33 GiB   2023-02-16 14:59:54  ~/bentoml/bentos/stable_diffusion_v2_mega/mlb3s6vny6hsuasc
  ```
 
 ## Containerizing to docker image
