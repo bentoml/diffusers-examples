@@ -24,6 +24,6 @@ To build a bento, we run `bentoml build`. Then after build we can list bentos by
 
 You can create a docker image containing this diffusers service with all its dependencies and cuda/cudnn runtime by running `bentoml containerize stable_diffusion_v2:mlb3s6vny6hsuasc`. The resulting docker image can be run on any machine with docker and `nvidia-docker` installed (`nvidia-docker` is only required if you want to run the model on GPU). This docker image bundles CUDA version 11.7, which also requires host machine has nvidia-driver version >= 515. You can modify the bundled CUDA version by changing `bentofile.yaml`.
 
-## Deploy to AWS ECW
+## Deploy to AWS EC2
 
 Please follow section "Deploy The Stable Diffusion Bento To EC2" in [this blog post](https://modelserving.com/blog/deploying-your-own-stable-diffusion-service-mz9wk)
