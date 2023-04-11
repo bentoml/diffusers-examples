@@ -4,3 +4,4 @@ accelerate
 transformers
 xformers
 triton
+gradio==3.20.0

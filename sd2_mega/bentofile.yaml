@@ -10,6 +10,7 @@ python:
     - diffusers
     - triton
     - xformers
+    - gradio==3.20.0
 docker:
     distro: debian
     cuda_version: "11.7.0"
