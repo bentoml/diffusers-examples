@@ -27,6 +27,7 @@ def img2img(img, data):
 # gradio UI
 
 import gradio as gr, re
+from PIL import Image
 
 def inference(prompt, guidance, steps, img=None, width=512, height=512, strength=0.5, neg_prompt=""):
 
@@ -42,6 +43,8 @@ def inference(prompt, guidance, steps, img=None, width=512, height=512, strength
         )
         return images
     else:
+        ratio = min(height / img.height, width / img.width)
+        img = img.resize((int(img.width * ratio), int(img.height * ratio)), Image.Resampling.LANCZOS)
         images, _ = stable_diffusion_runner.img2img.run(
             prompt,
             image=img,
@@ -49,8 +52,6 @@ def inference(prompt, guidance, steps, img=None, width=512, height=512, strength
             num_inference_steps=int(steps),
             guidance_scale=guidance,
             strength=strength,
-            width=width,
-            height=height,
         )
         return images
 
