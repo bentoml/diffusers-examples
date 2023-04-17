@@ -24,7 +24,8 @@ def img2img(img, data):
     images, _ = stable_diffusion_runner.img2img.run(**data)
     return images[0]
 
-# gradio UI
+
+# The following codes are for gradio web UI so we import gradio related modules here
 
 import gradio as gr, re
 from PIL import Image
