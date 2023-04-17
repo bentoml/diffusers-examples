@@ -10,7 +10,7 @@ stable_diffusion_runner = bento_model.with_options(
     custom_pipeline="stable_diffusion_mega",
 ).to_runner()
 
-svc = bentoml.Service("stable_diffusion_v2_mega", runners=[stable_diffusion_runner])
+svc = bentoml.Service("stable_diffusion_v2_mega_with_gradio", runners=[stable_diffusion_runner])
 
 @svc.api(input=JSON(), output=Image())
 def txt2img(input_data):
