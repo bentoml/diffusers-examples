@@ -86,8 +86,8 @@ a{
 with gr.Blocks(css=css) as demo:
 
     gr.HTML(
-        f"""
-            <div class="diffusion-spave-div">
+        """
+            <div>
               <div>
                 <h1>Diffusion Space</h1>
               </div>
