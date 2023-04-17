@@ -3,14 +3,7 @@ include:
   - "service.py"
   - "configuration.yaml"
 python:
-  packages:
-    - torch
-    - transformers
-    - accelerate
-    - diffusers
-    - triton
-    - xformers
-    - gradio==3.20.0
+  requirements_txt: "../requirements.txt"
 docker:
     distro: debian
     cuda_version: "11.7.0"
