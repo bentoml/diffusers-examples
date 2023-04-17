@@ -1,0 +1,11 @@
+service: "service_with_gradio.py:svc"
+include:
+  - "service_with_gradio.py"
+  - "configuration.yaml"
+python:
+  requirements_txt: "../requirements.txt"
+docker:
+    distro: debian
+    cuda_version: "11.7.0"
+    env:
+      BENTOML_CONFIG: "src/configuration.yaml"
