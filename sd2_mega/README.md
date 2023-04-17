@@ -26,11 +26,13 @@ To build a bento, we run `bentoml build`. Then after build we can list bentos by
  Tag                                        Size        Creation Time        Path
  anything_v3:5tts2vvn2oaggasc               18.24 GiB   2023-02-16 16:29:37  ~/bentoml/bentos/anything_v3/5tts2vvn2oaggasc
  stable_diffusion_v2_mega:mlb3s6vny6hsuasc       19.33 GiB   2023-02-16 14:59:54  ~/bentoml/bentos/stable_diffusion_v2_mega/mlb3s6vny6hsuasc
- ```
+```
+
+Alternatively, you can build a Bento of our service with gradio support by running `bentoml build -f bentofile-gradio.yaml`
 
 ## Containerizing to docker image
 
-You can create a docker image containing this diffusers service with all its dependencies and cuda/cudnn runtime by running `bentoml containerize stable_diffusion_v2_mega:mlb3s6vny6hsuasc`. The resulting docker image can be run on any machine with docker and `nvidia-docker` installed (`nvidia-docker` is only required if you want to run the model on GPU). This docker image bundles CUDA version 11.7, which also requires host machine has nvidia-driver version >= 515. You can modify the bundled CUDA version by changing `bentofile.yaml`.
+You can create a docker image containing this diffusers service with all its dependencies and cuda/cudnn runtime by running `bentoml containerize stable_diffusion_v2_mega:mlb3s6vny6hsuasc` (or `stable_diffusion_v2_mega_with_gradio:mlb3s6vny6hsuasc` if using gradio). The resulting docker image can be run on any machine with docker and `nvidia-docker` installed (`nvidia-docker` is only required if you want to run the model on GPU). This docker image bundles CUDA version 11.7, which also requires host machine has nvidia-driver version >= 515. You can modify the bundled CUDA version by changing `bentofile.yaml` or `bentofile-gradio.yaml`.
 
 ## Deploy to AWS EC2
 
