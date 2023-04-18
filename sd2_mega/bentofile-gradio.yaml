@@ -1,6 +1,6 @@
-service: "service.py:svc"
+service: "service_with_gradio.py:svc"
 include:
-  - "service.py"
+  - "service_with_gradio.py"
   - "configuration.yaml"
 python:
   requirements_txt: "../requirements.txt"
