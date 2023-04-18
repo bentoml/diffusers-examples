@@ -10,7 +10,7 @@ Then you can test the service with `../txt2img_test.sh`. If [`xformers`](https:/
 
 Alternatively, you can also run a BentoML service with web UI powered by [gradio](https://gradio.app) with:
 
-```
+```bash
 bentoml serve service_with_gradio:svc --production
 ```
 
