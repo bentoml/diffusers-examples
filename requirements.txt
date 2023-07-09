@@ -1,5 +1,5 @@
-diffusers==0.13.1
-bentoml[io-image]>=1.0.15
+diffusers>=0.17.1
+bentoml[io-image]>=1.0.22
 accelerate
 transformers
 xformers
