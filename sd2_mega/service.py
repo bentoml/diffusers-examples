@@ -14,12 +14,14 @@ svc = bentoml.Service("stable_diffusion_v2_mega", runners=[stable_diffusion_runn
 
 @svc.api(input=JSON(), output=Image())
 def txt2img(input_data):
-    images, _ = stable_diffusion_runner.text2img.run(**input_data)
+    res = stable_diffusion_runner.text2img.run(**input_data)
+    images = res[0]
     return images[0]
 
 img2img_input_spec = Multipart(img=Image(), data=JSON())
 @svc.api(input=img2img_input_spec, output=Image())
 def img2img(img, data):
     data["image"] = img
-    images, _ = stable_diffusion_runner.img2img.run(**data)
+    res = stable_diffusion_runner.img2img.run(**data)
+    images = res[0]
     return images[0]

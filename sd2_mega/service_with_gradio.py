@@ -14,14 +14,16 @@ svc = bentoml.Service("stable_diffusion_v2_mega_with_gradio", runners=[stable_di
 
 @svc.api(input=JSON(), output=Image())
 def txt2img(input_data):
-    images, _ = stable_diffusion_runner.text2img.run(**input_data)
+    res = stable_diffusion_runner.text2img.run(**input_data)
+    images = res[0]
     return images[0]
 
 img2img_input_spec = Multipart(img=Image(), data=JSON())
 @svc.api(input=img2img_input_spec, output=Image())
 def img2img(img, data):
     data["image"] = img
-    images, _ = stable_diffusion_runner.img2img.run(**data)
+    res = stable_diffusion_runner.img2img.run(**data)
+    images = res[0]
     return images[0]
 
 
@@ -34,7 +36,7 @@ def inference(prompt, guidance, steps, img=None, width=512, height=512, strength
 
     if img is None:
         # text2img
-        images, _ = stable_diffusion_runner.text2img.run(
+        res = stable_diffusion_runner.text2img.run(
             prompt,
             negative_prompt=neg_prompt,
             num_inference_steps=int(steps),
@@ -42,11 +44,12 @@ def inference(prompt, guidance, steps, img=None, width=512, height=512, strength
             width=width,
             height=height,
         )
+        images = res[0]
         return images
     else:
         ratio = min(height / img.height, width / img.width)
         img = img.resize((int(img.width * ratio), int(img.height * ratio)), Image.Resampling.LANCZOS)
-        images, _ = stable_diffusion_runner.img2img.run(
+        res = stable_diffusion_runner.img2img.run(
             prompt,
             image=img,
             negative_prompt=neg_prompt,
@@ -54,6 +57,7 @@ def inference(prompt, guidance, steps, img=None, width=512, height=512, strength
             guidance_scale=guidance,
             strength=strength,
         )
+        images = res[0]
         return images
 
 css = """
