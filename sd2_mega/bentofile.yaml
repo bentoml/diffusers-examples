@@ -1,11 +1,15 @@
 service: "service.py:svc"
 include:
   - "service.py"
-  - "configuration.yaml"
 python:
-  requirements_txt: "../requirements.txt"
+  packages:
+    - torch
+    - transformers
+    - accelerate
+    - diffusers
+    - triton
+    - xformers
+    - pydantic
 docker:
     distro: debian
-    cuda_version: "11.7.0"
-    env:
-      BENTOML_CONFIG: "src/configuration.yaml"
+    cuda_version: "11.7"
