@@ -6,7 +6,7 @@ First let's prepare a virtual environment and install requried depedencies
 
 ```
 python3 -m venv venv/ && source venv/bin/activate
-pip install -U -r requirements.txt
+pip install -U -r ../requirements.txt
 ```
 
 ## Import SDXL models
