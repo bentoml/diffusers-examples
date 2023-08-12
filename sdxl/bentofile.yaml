@@ -1,0 +1,15 @@
+service: "service.py:svc"
+include:
+  - "service.py"
+python:
+  packages:
+    - torch
+    - transformers
+    - accelerate
+    - diffusers
+    - triton
+    - xformers
+    - pydantic
+docker:
+    distro: debian
+    cuda_version: "11.8"
