@@ -1,91 +1,95 @@
 import typing as t
+import io
 
-from pydantic import BaseModel
-
-import torch
-from diffusers import DiffusionPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionUpscalePipeline
 
 import bentoml
-from bentoml.io import Image, JSON, Multipart
+import bentoml_io
+from bentoml_io.types import Image
 
-bento_model = bentoml.diffusers.get("sd2:latest")
-stable_diffusion_runner = bento_model.with_options(
-    pipeline_class=DiffusionPipeline,
-    custom_pipeline="stable_diffusion_mega",
-).to_runner()
-
-upscaler_model = bentoml.diffusers.get("sd2-upscaler:latest")
-upscaler_runner = upscaler_model.with_options(
-    pipeline_class=DiffusionPipeline,
-).to_runner()
-
-svc = bentoml.Service("stable_diffusion_v2_mega", runners=[
-    stable_diffusion_runner,
-    upscaler_runner,
-])
-
-# text2img input validation
-class Text2ImgSDArgs(BaseModel):
-    prompt: str
-    negative_prompt: t.Optional[str] = None
-    height: t.Optional[int] = 512
-    width: t.Optional[int] = 512
-    num_inference_steps: t.Optional[int] = 50
-    guidance_scale: t.Optional[float] = 7.5
-    eta: t.Optional[float] = 0.0
-    upscale: t.Optional[bool] = False
-
-text2img_input_sample = Text2ImgSDArgs(
+sample_txt2img_input = dict(
     prompt="photo a majestic sunrise in the mountains, best quality, 4k",
     negative_prompt="blurry, low-res, ugly, low quality",
-    height=768,
-    width=768,
+    height=256,
+    width=256,
     num_inference_steps=50,
     guidance_scale=7.5,
     eta=0.0,
+    upscale=True
 )
-text2img_input_spec = JSON.from_sample(text2img_input_sample)
 
-@svc.api(input=text2img_input_spec, output=Image())
-def text2img(input_data):
-    kwargs = input_data.dict()
-    upscale = kwargs.pop("upscale")
-    res = stable_diffusion_runner.text2img.run(**kwargs)
-    images = res[0]
-    if upscale:
-        prompt = kwargs["prompt"]
-        negative_prompt = kwargs.get("negative_prompt")
-        low_res_img = images[0]
-        low_res_img.format = "PNG"
-        res = upscaler_runner.run(
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            image=low_res_img
+sample_img2img_input = dict(
+    prompt="make the image black and white", 
+    strength=0.8,
+    upscale=True
+)
+
+@bentoml_io.service(
+    resources={"memory": "500MiB"},
+    traffic={"timeout": 1},
+)
+class StableDiffusionWithUpscaler:
+    sd2_model = bentoml.models.get("sd2:latest")
+    upscaler_model = bentoml.models.get("sd2-upscaler:latest")
+
+    def __init__(self) -> None:
+        # Load model into pipeline
+        self.stable_diffusion_txt2img = StableDiffusionPipeline.from_pretrained(self.sd2_model.path, use_safetensors=True)
+        self.stable_diffusion_img2img = StableDiffusionImg2ImgPipeline(
+            vae=self.stable_diffusion_txt2img.vae,
+            text_encoder=self.stable_diffusion_txt2img.text_encoder,
+            tokenizer=self.stable_diffusion_txt2img.tokenizer,
+            unet=self.stable_diffusion_txt2img.unet,
+            scheduler=self.stable_diffusion_txt2img.scheduler,
+            safety_checker=None,
+            feature_extractor=None,
+            requires_safety_checker=False,
         )
-        images = res[0]
-    return images[0]
+        self.upscaler_model_pipeline = StableDiffusionUpscalePipeline.from_pretrained(self.upscaler_model.path, use_safetensors=True)
+        self.stable_diffusion_txt2img.to('cuda')
+        self.stable_diffusion_img2img.to('cuda')
+        self.upscaler_model_pipeline.to('cuda')
 
-# img2img input validation
-class Img2ImgSDArgs(Text2ImgSDArgs):
-    strength: t.Optional[float] = 0.8
-
-img2img_input_spec = Multipart(img=Image(), data=JSON(pydantic_model=Img2ImgSDArgs))
-@svc.api(input=img2img_input_spec, output=Image())
-def img2img(img, data):
-    kwargs = data.dict()
-    upscale = kwargs.pop("upscale")
-    kwargs["image"] = img
-    res = stable_diffusion_runner.img2img.run(**kwargs)
-    images = res[0]
-    if upscale:
-        prompt = kwargs["prompt"]
-        negative_prompt = kwargs.get("negative_prompt")
-        low_res_img = images[0]
-        low_res_img.format = "PNG"
-        res = upscaler_runner.run(
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            image=low_res_img
-        )
+    @bentoml_io.api
+    def txt2img(self, input_data: t.Dict[str, t.Any] = sample_txt2img_input) -> Image:
+        upscale = input_data.pop("upscale")
+        res = self.stable_diffusion_txt2img(**input_data)
         images = res[0]
-    return images[0]
+        if upscale:
+            prompt = input_data["prompt"]
+            negative_prompt = input_data.get("negative_prompt")
+            low_res_img = images[0]
+            low_res_img.format = "PNG"
+            res = self.upscaler_model_pipeline(
+                prompt=prompt,
+                negative_prompt=negative_prompt,
+                image=low_res_img
+            )
+            images = res[0]
+        buf = io.BytesIO() # class 'PIL.Image.Image'. Need to convert to BinaryIO for decoding
+        images[0].save(buf, format='PNG') 
+        return buf
+
+    @bentoml_io.api
+    def img2img(self, image: Image, input_data: t.Dict[str, t.Any] = sample_img2img_input) -> Image:
+        upscale = input_data.pop("upscale")
+        image = image.to_pil_image()
+        input_data["image"] = image
+        res = self.stable_diffusion_img2img(**input_data)
+        images = res[0]
+        if upscale:
+            prompt = input_data["prompt"]
+            negative_prompt = input_data.get("negative_prompt")
+            low_res_img = images[0]
+            low_res_img.format = "PNG"
+            res = self.upscaler_model_pipeline(
+                prompt=prompt,
+                negative_prompt=negative_prompt,
+                image=low_res_img
+            )
+            images = res[0]
+        buf = io.BytesIO() # class 'PIL.Image.Image'. Need to convert to BinaryIO for decoding
+        images[0].save(buf, format='PNG') 
+        return buf
+    
+    

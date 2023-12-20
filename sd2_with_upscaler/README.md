@@ -11,7 +11,7 @@ python3 import_upscaler.py
 You can run a BentoML service with:
 
 ```
-bentoml serve service:svc --production
+bentoml serve service:StableDiffusionUpscaler --production
 ```
 
 Then you can test the service with `../txt2img_test.sh`. If [`xformers`](https://github.com/facebookresearch/xformers) is installed, BentoML will utilize it for inference acceleration automatically.

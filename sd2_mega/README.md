@@ -3,7 +3,7 @@
 You can run a BentoML service with:
 
 ```
-bentoml serve service:svc --production
+bentoml serve service:StableDiffusion --production
 ```
 
 Then you can test the service with `../txt2img_test.sh`. If [`xformers`](https://github.com/facebookresearch/xformers) is installed, BentoML will utilize it for inference acceleration automatically.
@@ -11,7 +11,7 @@ Then you can test the service with `../txt2img_test.sh`. If [`xformers`](https:/
 Alternatively, you can also run a BentoML service with web UI powered by [gradio](https://gradio.app) with:
 
 ```bash
-bentoml serve service_with_gradio:svc --production
+bentoml serve service_with_gradio:StableDiffusion --production
 ```
 
 and then visit <https://127.0.0.1:3000/ui/> to generate images using web UI.

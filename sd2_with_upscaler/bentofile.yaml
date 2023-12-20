@@ -1,5 +1,8 @@
-service: "service.py:svc"
-include:
+service: "service.py:StableDiffusionUpscaler"
+labels:
+  owner: bentoml-team
+  project: gallery
+  include:
   - "service.py"
   - "configuration.yaml"
 python:

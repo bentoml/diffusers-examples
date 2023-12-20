@@ -1,4 +1,7 @@
-service: "service.py:svc"
+service: "service.py:StableDiffusion"
+labels:
+  owner: bentoml-team
+  project: gallery
 include:
   - "service.py"
 python:
