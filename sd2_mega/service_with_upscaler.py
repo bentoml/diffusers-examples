@@ -1,17 +1,15 @@
 import typing as t
-import io
 
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionUpscalePipeline
 
 import bentoml
-import bentoml_io
-from bentoml_io.types import Image
+from PIL.Image import Image
 
 sample_txt2img_input = dict(
     prompt="photo a majestic sunrise in the mountains, best quality, 4k",
     negative_prompt="blurry, low-res, ugly, low quality",
-    height=256,
-    width=256,
+    height=320,
+    width=320,
     num_inference_steps=50,
     guidance_scale=7.5,
     eta=0.0,
@@ -24,9 +22,9 @@ sample_img2img_input = dict(
     upscale=True
 )
 
-@bentoml_io.service(
+@bentoml.service(
     resources={"memory": "500MiB"},
-    traffic={"timeout": 1},
+    traffic={"timeout": 60},
 )
 class StableDiffusionWithUpscaler:
     sd2_model = bentoml.models.get("sd2:latest")
@@ -50,7 +48,7 @@ class StableDiffusionWithUpscaler:
         self.stable_diffusion_img2img.to('cuda')
         self.upscaler_model_pipeline.to('cuda')
 
-    @bentoml_io.api
+    @bentoml.api
     def txt2img(self, input_data: t.Dict[str, t.Any] = sample_txt2img_input) -> Image:
         upscale = input_data.pop("upscale")
         res = self.stable_diffusion_txt2img(**input_data)
@@ -66,14 +64,11 @@ class StableDiffusionWithUpscaler:
                 image=low_res_img
             )
             images = res[0]
-        buf = io.BytesIO() # class 'PIL.Image.Image'. Need to convert to BinaryIO for decoding
-        images[0].save(buf, format='PNG') 
-        return buf
+        return images[0]
 
-    @bentoml_io.api
+    @bentoml.api
     def img2img(self, image: Image, input_data: t.Dict[str, t.Any] = sample_img2img_input) -> Image:
         upscale = input_data.pop("upscale")
-        image = image.to_pil_image()
         input_data["image"] = image
         res = self.stable_diffusion_img2img(**input_data)
         images = res[0]
@@ -88,8 +83,5 @@ class StableDiffusionWithUpscaler:
                 image=low_res_img
             )
             images = res[0]
-        buf = io.BytesIO() # class 'PIL.Image.Image'. Need to convert to BinaryIO for decoding
-        images[0].save(buf, format='PNG') 
-        return buf
-    
+        return images[0]
     

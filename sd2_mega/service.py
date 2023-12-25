@@ -1,13 +1,10 @@
 import typing as t
-import io
 
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
 
 import bentoml
 
-import bentoml_io
-from bentoml_io.types import Image
-
+from PIL.Image import Image
 
 sample_txt2img_input = dict(
     prompt="photo of a majestic sunrise in the mountains, best quality, 4k",
@@ -24,9 +21,9 @@ sample_img2img_input = dict(
     strength=0.8
 )
 
-@bentoml_io.service(
+@bentoml.service(
     resources={"memory": "500MiB"},
-    traffic={"timeout": 1},
+    traffic={"timeout": 30},
 )
 class StableDiffusion:
     model_ref = bentoml.models.get("sd2:latest")
@@ -47,20 +44,15 @@ class StableDiffusion:
         self.stable_diffusion_txt2img.to('cuda')
         self.stable_diffusion_img2img.to('cuda')
 
-    @bentoml_io.api
+    @bentoml.api
     def txt2img(self, input_data: t.Dict[str, t.Any] = sample_txt2img_input) -> Image:
         res = self.stable_diffusion_txt2img(**input_data)
-        image = res[0][0] # class 'PIL.Image.Image'. Need to convert to BinaryIO for decoding
-        buf = io.BytesIO()
-        image.save(buf, format='PNG') 
-        return buf
+        image = res[0][0]
+        return image
 
-    @bentoml_io.api
+    @bentoml.api
     def img2img(self, image: Image, input_data: t.Dict[str, t.Any] = sample_img2img_input) -> Image:
-        image = image.to_pil_image()
+        image = image
         res = self.stable_diffusion_img2img(image=image, **input_data)
-        image = res[0][0] # class 'PIL.Image.Image'. Need to convert to BinaryIO for decoding
-        buf = io.BytesIO()
-        image.save(buf, format='PNG')
-        return buf
-    
+        image = res[0][0]
+        return image
