@@ -15,6 +15,12 @@ sample_txt2img_input = dict(
     eta=0.0
 )
 
+sample_img2img_input = dict(
+    prompt="make higher resolution", 
+    strength=0.8,
+    upscale=True
+)
+
 @bentoml.service(
     resources={"memory": "500MiB"},
     traffic={"timeout": 60},
@@ -31,9 +37,14 @@ class StableDiffusionUpscaler:
         self.upscaler_model_pipeline.to('cuda')
 
     @bentoml.api
-    def txt2img(self, input_data: t.Dict[str, t.Any] = sample_txt2img_input) -> Image:
+    def upscale(self,  image: Image, input_data: t.Dict[str, t.Any] = sample_img2img_input) -> Image:
+        input_data["image"] = image
         prompt = input_data["prompt"]
         negative_prompt = input_data.get("negative_prompt")
-        low_res_img = self.sd2_model_pipeline(**input_data)[0][0]
-        image = self.upscaler_model_pipeline(prompt=prompt, negative_prompt=negative_prompt, image=low_res_img)[0][0]
-        return image
+        res = self.upscaler_model_pipeline(
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            image=image
+        )
+        images = res[0]
+        return images[0]

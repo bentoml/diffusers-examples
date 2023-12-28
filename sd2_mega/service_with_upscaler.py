@@ -57,7 +57,6 @@ class StableDiffusionWithUpscaler:
             prompt = input_data["prompt"]
             negative_prompt = input_data.get("negative_prompt")
             low_res_img = images[0]
-            low_res_img.format = "PNG"
             res = self.upscaler_model_pipeline(
                 prompt=prompt,
                 negative_prompt=negative_prompt,
@@ -76,7 +75,6 @@ class StableDiffusionWithUpscaler:
             prompt = input_data["prompt"]
             negative_prompt = input_data.get("negative_prompt")
             low_res_img = images[0]
-            low_res_img.format = "PNG"
             res = self.upscaler_model_pipeline(
                 prompt=prompt,
                 negative_prompt=negative_prompt,
