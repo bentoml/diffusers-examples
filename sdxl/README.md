@@ -21,7 +21,7 @@ huggingface-cli login
 then run:
 
 ```
-python3 import_model.py
+python3 model.py
 ```
 
 ## Run BentoML service
