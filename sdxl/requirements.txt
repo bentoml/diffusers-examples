@@ -1,0 +1,7 @@
+torch
+transformers
+accelerate
+diffusers
+triton
+xformers
+pydantic<2.0
